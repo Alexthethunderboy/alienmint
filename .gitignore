@@ -1,0 +1,8 @@
+.DS_Store
+contracts/cache/
+contracts/out/
+frontend/.next/
+frontend/node_modules/
+frontend/.env*
+!frontend/.env.example
+*.log

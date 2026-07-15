@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+:root { color-scheme: dark; --background: #020504; --foreground: #f4f4f5; }
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: Arial, Helvetica, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+* { box-sizing: border-box; }
+html { background: var(--background); scroll-behavior: smooth; }
+body { margin: 0; background: var(--background); color: var(--foreground); font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+button, a { -webkit-tap-highlight-color: transparent; }
+.premium-canvas { background: radial-gradient(circle at 18% 18%, #0a1a16 0, transparent 32%), radial-gradient(circle at 84% 62%, #06151a 0, transparent 32%), linear-gradient(145deg, #020504 0%, #05070b 46%, #010203 100%); }
+.glass-panel { background: linear-gradient(145deg, rgba(255,255,255,.055), rgba(255,255,255,.018)); border: 1px solid rgba(255,255,255,.13); box-shadow: inset 0 1px 0 rgba(255,255,255,.09), 0 32px 80px rgba(0,0,0,.32); backdrop-filter: blur(28px) saturate(125%); -webkit-backdrop-filter: blur(28px) saturate(125%); }
+.clear-inset { background: linear-gradient(120deg, rgba(255,255,255,.045), rgba(255,255,255,.012)); border: 1px solid rgba(255,255,255,.1); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); backdrop-filter: blur(20px); }
+.clear-pill { border: 1px solid rgba(255,255,255,.11); background: rgba(255,255,255,.025); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); border-radius: 999px; backdrop-filter: blur(20px); }
+.clear-control { border: 1px solid rgba(255,255,255,.13); background: rgba(255,255,255,.035); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 12px 36px rgba(0,0,0,.18); backdrop-filter: blur(22px); transition: all 300ms; }
+.clear-control:hover { background: rgba(255,255,255,.075); border-color: rgba(255,255,255,.2); }
+.clear-icon { border: 1px solid rgba(255,255,255,.13); background: linear-gradient(145deg,rgba(255,255,255,.065),rgba(255,255,255,.018)); box-shadow: inset 0 1px 0 rgba(255,255,255,.1),0 12px 36px rgba(0,0,0,.22); backdrop-filter: blur(20px); }
+.clear-rail { overflow: hidden; border: 1px solid rgba(255,255,255,.1); border-radius: 1.25rem; background: rgba(255,255,255,.018); box-shadow: inset 0 1px 0 rgba(255,255,255,.055); backdrop-filter: blur(22px); }
+.stat-item + .stat-item { border-left: 1px solid rgba(255,255,255,.08); }
+.art-frame { border: 1px solid rgba(255,255,255,.12); box-shadow: inset 0 1px 0 rgba(255,255,255,.08), 0 20px 45px rgba(0,0,0,.22); }
+.interactive-control { @apply hover:bg-white/[0.08] transition-all duration-300 active:scale-[0.98] focus-visible:outline-2 focus-visible:outline-cyan-400; background: rgba(255,255,255,.025); border: 1px solid rgba(255,255,255,.1); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); backdrop-filter: blur(18px); }
+.text-gradient { background: linear-gradient(100deg, #10b981, #22d3ee 55%, #e2e8f0); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.grid-overlay { background-image: linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px); background-size: 64px 64px; mask-image: radial-gradient(circle at center,black,transparent 75%); }
+.noise-overlay { background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.35'/%3E%3C/svg%3E"); }
+.art-grid { background-image: linear-gradient(rgba(34,211,238,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(34,211,238,.08) 1px,transparent 1px); background-size: 28px 28px; transform: perspective(350px) rotateX(55deg) scale(1.5); transform-origin: center bottom; }
+.ambient-orb { animation: drift 10s ease-in-out infinite alternate; }
+.ambient-orb-delay { animation-delay: -4s; }
+.connect-shell > div > button { background: transparent !important; border: 0 !important; box-shadow: none !important; min-height: 42px !important; }
+@keyframes drift { to { transform: translate3d(3rem,-1rem,0) scale(1.08); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }

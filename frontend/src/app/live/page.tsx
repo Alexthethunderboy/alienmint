@@ -1,0 +1,9 @@
+"use client";
+import "@rainbow-me/rainbowkit/styles.css";
+import Link from "next/link";
+import { liveEnv } from "@/config/env";
+import { Web3Provider } from "@/providers/Web3Provider";
+import { Navbar } from "@/components/Navbar";
+import { MintCard } from "@/components/MintCard";
+function Experience(){return <main className="premium-canvas min-h-screen text-white"><Navbar/><section className="mx-auto grid min-h-[calc(100vh-5rem)] max-w-7xl items-center gap-14 px-6 py-16 lg:grid-cols-2 lg:px-10"><div><p className="text-xs uppercase tracking-[.22em] text-emerald-300">Base Sepolia · live testnet</p><h1 className="mt-5 text-5xl tracking-[-.05em] sm:text-7xl">Mint the edge of the <span className="text-gradient">open web.</span></h1><p className="mt-6 max-w-xl leading-8 text-white/45">The production interaction path: connect a wallet, verify the network, simulate the call, and submit an on-chain mint.</p><Link href="/" className="mt-8 inline-block text-sm text-cyan-300">← Return to frictionless demo</Link></div><MintCard/></section></main>}
+export default function Live(){if(!liveEnv.ok)return <main className="premium-canvas grid min-h-screen place-items-center p-6 text-white"><section className="glass-panel max-w-xl rounded-3xl p-8"><span className="rounded-full border border-amber-300/20 bg-amber-300/[.05] px-3 py-2 text-xs text-amber-200">Live version not configured</span><h1 className="mt-7 text-3xl">The interactive demo is ready.</h1><p className="mt-4 leading-7 text-white/45">The testnet route needs deployment credentials from the project owner. This does not affect the client demo or Creator Studio.</p><ul className="mt-5 list-disc space-y-2 pl-5 text-sm text-white/40">{liveEnv.issues.map(x=><li key={x}>{x}</li>)}</ul><Link href="/" className="mt-7 inline-block rounded-xl bg-emerald-400 px-5 py-3 font-medium text-black">Open interactive demo</Link></section></main>;return <Web3Provider><Experience/></Web3Provider>}
