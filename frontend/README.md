@@ -26,3 +26,7 @@ npm run build
 ```
 
 `npm run build` verifies the credential-free demo. `npm run build:live` additionally rejects missing placeholders, invalid URLs, and zero contract addresses. Artwork selected in `/studio` never leaves the browser; publishing is deliberately disabled until storage, authentication, contract deployment, and verification are approved.
+
+## Vercel
+
+Set the Vercel project Root Directory to `frontend`, Production Branch to `main`, and leave the Output Directory at the Next.js default. The checked-in `vercel.json` uses `npm ci` and `npm run build` for deterministic deployments. The public production domain must be assigned to a production deployment; generated preview URLs may be protected separately.

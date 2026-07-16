@@ -1,10 +1,287 @@
-/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { tokenMetadata, validateArtwork } from "@/lib/studio";
 import type { CollectionDraft } from "@/types/collection";
-const field="mt-2 w-full rounded-xl border border-white/[.1] bg-white/[.025] px-4 py-3 text-white outline-none placeholder:text-white/20 focus:border-cyan-400/50";
-const initial:CollectionDraft={name:"AlienMint Genesis",symbol:"ALIEN",description:"A unique digital sculpture from the AlienMint Genesis collection.",externalUrl:"",royaltyRecipient:"",royaltyPercentage:5,mintPrice:.05,supply:10000,maxPerTransaction:5,files:[],traits:[{attribute:"Medium",value:"Digital glass"}]};
-export default function Studio(){const[draft,setDraft]=useState(initial);const[errors,setErrors]=useState<string[]>([]);const[urls,setUrls]=useState<string[]>([]);useEffect(()=>{const next=draft.files.map(URL.createObjectURL);setUrls(next);return()=>next.forEach(URL.revokeObjectURL)},[draft.files]);const metadata=useMemo(()=>tokenMetadata(draft,1),[draft]);function add(files:FileList|null){if(!files)return;const incoming=[...files];const errs=incoming.map(validateArtwork).filter(Boolean) as string[];setErrors(errs);setDraft(d=>({...d,files:[...d.files,...incoming.filter(f=>!validateArtwork(f))].slice(0,20)}))}function move(i:number,n:number){setDraft(d=>{const a=[...d.files];[a[i],a[n]]=[a[n],a[i]];return{...d,files:a}})}function download(){const blob=new Blob([JSON.stringify({collection:draft.name,symbol:draft.symbol,sale:{mintPrice:draft.mintPrice,supply:draft.supply,maxPerTransaction:draft.maxPerTransaction},metadata},null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="nweb-deployment-preview.json";a.click();URL.revokeObjectURL(a.href)}return <main className="premium-canvas min-h-screen text-white"><header className="border-b border-white/[.08] bg-black/25 backdrop-blur-xl"><div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6"><Link href="/">← NWEB Signals</Link><span className="rounded-full border border-amber-300/20 bg-amber-300/[.05] px-3 py-2 text-xs text-amber-200">Local demo · nothing uploaded</span></div></header><div className="mx-auto max-w-7xl px-6 py-14"><p className="text-xs uppercase tracking-[.25em] text-cyan-300">Creator Studio</p><h1 className="mt-4 max-w-3xl text-4xl tracking-tight sm:text-6xl">Prepare a collection before publishing.</h1><p className="mt-5 max-w-2xl leading-7 text-white/45">Add a manageable sample batch here. A 10,000-item unique collection normally starts with prepared artwork or a dedicated generative pipeline.</p><div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_.9fr]"><div className="space-y-6"><section className="glass-panel rounded-3xl p-6"><h2 className="text-xl">1. Collection artwork</h2><label className="mt-5 grid min-h-44 cursor-pointer place-items-center rounded-2xl border border-dashed border-white/15 bg-white/[.02] p-6 text-center transition hover:bg-white/[.05]"><input className="sr-only" type="file" multiple accept="image/png,image/jpeg,image/webp" onChange={e=>add(e.target.files)}/><span><strong>Drop artwork or choose files</strong><small className="mt-2 block text-white/35">PNG, JPEG or WebP · 10 MB each · up to 20 in demo</small></span></label>{errors.map(e=><p role="alert" className="mt-3 text-sm text-red-300" key={e}>{e}</p>)}{draft.files.length===0?<p className="mt-4 text-sm text-white/35">No files selected. Files remain on this device.</p>:<div className="mt-5 grid gap-3 sm:grid-cols-2">{draft.files.map((f,i)=><article className="clear-inset flex items-center gap-3 rounded-xl p-2" key={`${f.name}-${i}`}><div className="relative h-16 w-16 overflow-hidden rounded-lg"><Image src={urls[i]} alt="" fill className="object-cover" unoptimized/></div><div className="min-w-0 flex-1"><p className="truncate text-sm">Token #{i+1}</p><p className="truncate text-xs text-white/35">{f.name}</p></div><div className="flex flex-col"><button disabled={i===0} onClick={()=>move(i,i-1)} aria-label={`Move token ${i+1} up`}>↑</button><button disabled={i===draft.files.length-1} onClick={()=>move(i,i+1)} aria-label={`Move token ${i+1} down`}>↓</button><button onClick={()=>setDraft(d=>({...d,files:d.files.filter((_,x)=>x!==i)}))} aria-label={`Remove token ${i+1}`} className="text-red-300">×</button></div></article>)}</div>}</section><section className="glass-panel grid gap-5 rounded-3xl p-6 sm:grid-cols-2"><h2 className="sm:col-span-2 text-xl">2. Collection and sale settings</h2>{[["Collection name","name"],["Symbol","symbol"],["External URL","externalUrl"],["Royalty recipient","royaltyRecipient"]].map(([label,key])=><label key={key} className="text-sm text-white/55">{label}<input className={field} value={String(draft[key as keyof CollectionDraft]??"")} onChange={e=>setDraft(d=>({...d,[key]:e.target.value}))}/></label>)}<label className="sm:col-span-2 text-sm text-white/55">Description<textarea className={`${field} min-h-28`} value={draft.description} onChange={e=>setDraft(d=>({...d,description:e.target.value}))}/></label>{[["Royalty %","royaltyPercentage"],["Mint price (ETH)","mintPrice"],["Supply","supply"],["Max per transaction","maxPerTransaction"]].map(([label,key])=><label key={key} className="text-sm text-white/55">{label}<input type="number" min="0" className={field} value={draft[key as keyof CollectionDraft] as number} onChange={e=>setDraft(d=>({...d,[key]:Number(e.target.value)}))}/></label>)}<p className="sm:col-span-2 text-xs leading-5 text-amber-200/55">Royalty settings are captured for planning. The current approval contract does not implement EIP-2981; that requires a contract revision after approval.</p></section></div><aside className="space-y-6"><section className="glass-panel sticky top-6 rounded-3xl p-6"><h2 className="text-xl">Metadata preview</h2><p className="mt-2 text-sm text-white/35">Token #1 · generated live</p><pre className="mt-5 max-h-80 overflow-auto rounded-2xl bg-black/35 p-4 text-xs leading-6 text-cyan-100/70">{JSON.stringify(metadata,null,2)}</pre><button onClick={download} className="interactive-control mt-4 w-full rounded-xl py-3">Download preview & summary</button></section></aside></div><section className="mt-6 glass-panel rounded-3xl p-6"><h2 className="text-xl">Publish pipeline preview</h2><div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">{["Upload images","Generate metadata","Upload metadata","Deploy contract","Verify contract","Open mint"].map((x,i)=><div className="clear-inset rounded-xl p-4" key={x}><span className="text-xs text-emerald-300">0{i+1}</span><p className="mt-3 text-sm">{x}</p></div>)}</div><button disabled className="mt-6 w-full rounded-xl border border-white/10 bg-white/[.03] py-4 text-white/30">External publishing disabled in demo mode</button></section></div></main>}
+const field =
+  "mt-2 w-full rounded-xl border border-white/[.1] bg-white/[.025] px-4 py-3 text-white outline-none placeholder:text-white/20 focus:border-cyan-400/50";
+const initial: CollectionDraft = {
+  name: "AlienMint Genesis",
+  symbol: "ALIEN",
+  description:
+    "A unique digital sculpture from the AlienMint Genesis collection.",
+  externalUrl: "",
+  royaltyRecipient: "",
+  royaltyPercentage: 5,
+  mintPrice: 0.05,
+  supply: 10000,
+  maxPerTransaction: 5,
+  files: [],
+  traits: [{ attribute: "Medium", value: "Digital glass" }],
+};
+export default function Studio() {
+  const [draft, setDraft] = useState(initial);
+  const [errors, setErrors] = useState<string[]>([]);
+  const urls = useMemo(
+    () => draft.files.map((file) => URL.createObjectURL(file)),
+    [draft.files],
+  );
+  useEffect(() => {
+    return () => urls.forEach(URL.revokeObjectURL);
+  }, [urls]);
+  const metadata = useMemo(() => tokenMetadata(draft, 1), [draft]);
+  function add(files: FileList | null) {
+    if (!files) return;
+    const incoming = [...files];
+    const errs = incoming.map(validateArtwork).filter(Boolean) as string[];
+    setErrors(errs);
+    setDraft((d) => ({
+      ...d,
+      files: [...d.files, ...incoming.filter((f) => !validateArtwork(f))].slice(
+        0,
+        20,
+      ),
+    }));
+  }
+  function move(i: number, n: number) {
+    setDraft((d) => {
+      const a = [...d.files];
+      [a[i], a[n]] = [a[n], a[i]];
+      return { ...d, files: a };
+    });
+  }
+  function download() {
+    const blob = new Blob(
+      [
+        JSON.stringify(
+          {
+            collection: draft.name,
+            symbol: draft.symbol,
+            sale: {
+              mintPrice: draft.mintPrice,
+              supply: draft.supply,
+              maxPerTransaction: draft.maxPerTransaction,
+            },
+            metadata,
+          },
+          null,
+          2,
+        ),
+      ],
+      { type: "application/json" },
+    );
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "alienmint-deployment-preview.json";
+    a.click();
+    window.setTimeout(() => URL.revokeObjectURL(a.href), 0);
+  }
+  return (
+    <main className="premium-canvas min-h-screen text-white">
+      <header className="border-b border-white/[.08] bg-black/25 backdrop-blur-xl">
+        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+          <Link href="/">← AlienMint</Link>
+          <span className="rounded-full border border-amber-300/20 bg-amber-300/[.05] px-3 py-2 text-xs text-amber-200">
+            Local demo · nothing uploaded
+          </span>
+        </div>
+      </header>
+      <div className="mx-auto max-w-7xl px-6 py-14">
+        <p className="text-xs uppercase tracking-[.25em] text-cyan-300">
+          Creator Studio
+        </p>
+        <h1 className="mt-4 max-w-3xl text-4xl tracking-tight sm:text-6xl">
+          Prepare a collection before publishing.
+        </h1>
+        <p className="mt-5 max-w-2xl leading-7 text-white/45">
+          Add a manageable sample batch here. A 10,000-item unique collection
+          normally starts with prepared artwork or a dedicated generative
+          pipeline.
+        </p>
+        <div className="mt-12 grid gap-6 lg:grid-cols-[1.1fr_.9fr]">
+          <div className="space-y-6">
+            <section className="glass-panel rounded-3xl p-6">
+              <h2 className="text-xl">1. Collection artwork</h2>
+              <label className="mt-5 grid min-h-44 cursor-pointer place-items-center rounded-2xl border border-dashed border-white/15 bg-white/[.02] p-6 text-center transition hover:bg-white/[.05]">
+                <input
+                  className="sr-only"
+                  type="file"
+                  multiple
+                  accept="image/png,image/jpeg,image/webp"
+                  onChange={(e) => add(e.target.files)}
+                />
+                <span>
+                  <strong>Drop artwork or choose files</strong>
+                  <small className="mt-2 block text-white/35">
+                    PNG, JPEG or WebP · 10 MB each · up to 20 in demo
+                  </small>
+                </span>
+              </label>
+              {errors.map((e) => (
+                <p role="alert" className="mt-3 text-sm text-red-300" key={e}>
+                  {e}
+                </p>
+              ))}
+              {draft.files.length === 0 ? (
+                <p className="mt-4 text-sm text-white/35">
+                  No files selected. Files remain on this device.
+                </p>
+              ) : (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {draft.files.map((f, i) => (
+                    <article
+                      className="clear-inset flex items-center gap-3 rounded-xl p-2"
+                      key={`${f.name}-${i}`}
+                    >
+                      <div className="relative h-16 w-16 overflow-hidden rounded-lg">
+                        <Image
+                          src={urls[i]}
+                          alt=""
+                          fill
+                          className="object-cover"
+                          unoptimized
+                        />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm">Token #{i + 1}</p>
+                        <p className="truncate text-xs text-white/35">
+                          {f.name}
+                        </p>
+                      </div>
+                      <div className="flex flex-col">
+                        <button
+                          disabled={i === 0}
+                          onClick={() => move(i, i - 1)}
+                          aria-label={`Move token ${i + 1} up`}
+                        >
+                          ↑
+                        </button>
+                        <button
+                          disabled={i === draft.files.length - 1}
+                          onClick={() => move(i, i + 1)}
+                          aria-label={`Move token ${i + 1} down`}
+                        >
+                          ↓
+                        </button>
+                        <button
+                          onClick={() =>
+                            setDraft((d) => ({
+                              ...d,
+                              files: d.files.filter((_, x) => x !== i),
+                            }))
+                          }
+                          aria-label={`Remove token ${i + 1}`}
+                          className="text-red-300"
+                        >
+                          ×
+                        </button>
+                      </div>
+                    </article>
+                  ))}
+                </div>
+              )}
+            </section>
+            <section className="glass-panel grid gap-5 rounded-3xl p-6 sm:grid-cols-2">
+              <h2 className="sm:col-span-2 text-xl">
+                2. Collection and sale settings
+              </h2>
+              {[
+                ["Collection name", "name"],
+                ["Symbol", "symbol"],
+                ["External URL", "externalUrl"],
+                ["Royalty recipient", "royaltyRecipient"],
+              ].map(([label, key]) => (
+                <label key={key} className="text-sm text-white/55">
+                  {label}
+                  <input
+                    className={field}
+                    value={String(draft[key as keyof CollectionDraft] ?? "")}
+                    onChange={(e) =>
+                      setDraft((d) => ({ ...d, [key]: e.target.value }))
+                    }
+                  />
+                </label>
+              ))}
+              <label className="sm:col-span-2 text-sm text-white/55">
+                Description
+                <textarea
+                  className={`${field} min-h-28`}
+                  value={draft.description}
+                  onChange={(e) =>
+                    setDraft((d) => ({ ...d, description: e.target.value }))
+                  }
+                />
+              </label>
+              {[
+                ["Royalty %", "royaltyPercentage"],
+                ["Mint price (ETH)", "mintPrice"],
+                ["Supply", "supply"],
+                ["Max per transaction", "maxPerTransaction"],
+              ].map(([label, key]) => (
+                <label key={key} className="text-sm text-white/55">
+                  {label}
+                  <input
+                    type="number"
+                    min="0"
+                    className={field}
+                    value={draft[key as keyof CollectionDraft] as number}
+                    onChange={(e) =>
+                      setDraft((d) => ({ ...d, [key]: Number(e.target.value) }))
+                    }
+                  />
+                </label>
+              ))}
+              <p className="sm:col-span-2 text-xs leading-5 text-amber-200/55">
+                Royalty settings are captured for planning. The current approval
+                contract does not implement EIP-2981; that requires a contract
+                revision after approval.
+              </p>
+            </section>
+          </div>
+          <aside className="space-y-6">
+            <section className="glass-panel sticky top-6 rounded-3xl p-6">
+              <h2 className="text-xl">Metadata preview</h2>
+              <p className="mt-2 text-sm text-white/35">
+                Token #1 · generated live
+              </p>
+              <pre className="mt-5 max-h-80 overflow-auto rounded-2xl bg-black/35 p-4 text-xs leading-6 text-cyan-100/70">
+                {JSON.stringify(metadata, null, 2)}
+              </pre>
+              <button
+                onClick={download}
+                className="interactive-control mt-4 w-full rounded-xl py-3"
+              >
+                Download preview & summary
+              </button>
+            </section>
+          </aside>
+        </div>
+        <section className="mt-6 glass-panel rounded-3xl p-6">
+          <h2 className="text-xl">Publish pipeline preview</h2>
+          <div className="mt-6 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            {[
+              "Upload images",
+              "Generate metadata",
+              "Upload metadata",
+              "Deploy contract",
+              "Verify contract",
+              "Open mint",
+            ].map((x, i) => (
+              <div className="clear-inset rounded-xl p-4" key={x}>
+                <span className="text-xs text-emerald-300">0{i + 1}</span>
+                <p className="mt-3 text-sm">{x}</p>
+              </div>
+            ))}
+          </div>
+          <button
+            disabled
+            className="mt-6 w-full rounded-xl border border-white/10 bg-white/[.03] py-4 text-white/30"
+          >
+            External publishing disabled in demo mode
+          </button>
+        </section>
+      </div>
+    </main>
+  );
+}

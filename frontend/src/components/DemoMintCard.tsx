@@ -4,4 +4,151 @@ import { useEffect, useState } from "react";
 import { mockCollection } from "@/data/mock-collection";
 import { clampQuantity, nextMintStage } from "@/lib/demo-mint";
 import type { MintStage } from "@/types/collection";
-export function DemoMintCard(){const [quantity,setQuantity]=useState(1);const [stage,setStage]=useState<MintStage>("idle");const remaining=mockCollection.maxSupply-mockCollection.supply;useEffect(()=>{if(stage!=="processing")return;const t=setTimeout(()=>setStage(s=>nextMintStage(s,"complete")),1100);return()=>clearTimeout(t)},[stage]);const set=(n:number)=>setQuantity(clampQuantity(n,remaining,mockCollection.maxPerTransaction));return <section className="glass-panel relative mx-auto w-full max-w-[32rem] rounded-[2rem] p-3" aria-label="Interactive demo mint"><div className="relative aspect-[1.2] overflow-hidden rounded-[1.5rem]"><Image src={stage==="success"?"/nft/signal-05.png":"/nft/signal-01.png"} alt={stage==="success"?"Your revealed demo NFT":"AlienMint Genesis featured artwork"} fill priority sizes="520px" className="object-cover"/><span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/35 px-3 py-2 text-[10px] uppercase tracking-widest backdrop-blur-xl">Interactive Demo</span>{stage==="success"&&<div className="absolute inset-x-4 bottom-4 rounded-2xl border border-emerald-300/20 bg-black/45 p-4 backdrop-blur-xl"><p className="text-emerald-300">Demo mint complete</p><p className="mt-1 text-sm text-white/55">AlienMint Genesis #3428 has been revealed.</p></div>}</div><div className="p-4 sm:p-6"><div className="flex justify-between"><div><p className="text-xs uppercase tracking-widest text-white/35">Public demo mint</p><p className="mt-2 text-2xl">{mockCollection.mintPrice} ETH <span className="text-sm text-white/35">each</span></p></div><p className="text-right text-sm text-white/45">{mockCollection.supply.toLocaleString()} / {mockCollection.maxSupply.toLocaleString()}<br/><span className="text-xs">preview supply</span></p></div>{stage==="confirm"?<div className="clear-inset mt-6 rounded-2xl p-5"><p className="font-medium">Confirm simulated mint</p><div className="mt-4 flex justify-between text-sm text-white/50"><span>{quantity} NFT{quantity>1?"s":""}</span><span>{(quantity*mockCollection.mintPrice).toFixed(2)} ETH (demo)</span></div><div className="mt-5 grid grid-cols-2 gap-3"><button onClick={()=>setStage("idle")} className="interactive-control rounded-xl py-3">Back</button><button onClick={()=>setStage(s=>nextMintStage(s,"confirm"))} className="rounded-xl bg-emerald-400 py-3 font-semibold text-black">Confirm</button></div></div>:stage==="processing"?<div className="mt-6 rounded-2xl border border-cyan-400/15 bg-cyan-400/[.04] p-6 text-center" role="status"><span className="mx-auto block h-7 w-7 animate-spin rounded-full border-2 border-cyan-300/20 border-t-cyan-300"/><p className="mt-3">Simulating mint…</p><p className="mt-1 text-xs text-white/40">No blockchain transaction is being sent.</p></div>:stage==="success"?<button onClick={()=>setStage("idle")} className="interactive-control mt-6 w-full rounded-xl py-4">Mint another demo NFT</button>:<><div className="mt-6 flex items-center justify-between"><span className="text-sm text-white/45">Quantity</span><div className="flex items-center gap-4"><button aria-label="Decrease quantity" onClick={()=>set(quantity-1)} className="interactive-control h-10 w-10 rounded-xl">−</button><output aria-live="polite" className="w-5 text-center">{quantity}</output><button aria-label="Increase quantity" onClick={()=>set(quantity+1)} className="interactive-control h-10 w-10 rounded-xl">+</button></div></div><button onClick={()=>setStage(s=>nextMintStage(s,"begin"))} className="mt-6 w-full rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-4 font-semibold text-black transition hover:brightness-110 active:scale-[.98]">Preview mint · {(quantity*mockCollection.mintPrice).toFixed(2)} ETH</button><p className="mt-3 text-center text-xs text-white/30">Simulation only — no wallet, funds, or network required.</p></>}</div></section>}
+export function DemoMintCard() {
+  const [quantity, setQuantity] = useState(1);
+  const [stage, setStage] = useState<MintStage>("idle");
+  const remaining = mockCollection.maxSupply - mockCollection.supply;
+  useEffect(() => {
+    if (stage !== "processing") return;
+    const t = setTimeout(
+      () => setStage((s) => nextMintStage(s, "complete")),
+      1100,
+    );
+    return () => clearTimeout(t);
+  }, [stage]);
+  const set = (n: number) =>
+    setQuantity(clampQuantity(n, remaining, mockCollection.maxPerTransaction));
+  return (
+    <section
+      className="glass-panel relative mx-auto w-full max-w-[32rem] rounded-[2rem] p-3"
+      aria-label="Interactive demo mint"
+    >
+      <div className="relative aspect-[1.2] overflow-hidden rounded-[1.5rem]">
+        <Image
+          src={
+            stage === "success" ? "/nft/signal-05.png" : "/nft/signal-01.png"
+          }
+          alt={
+            stage === "success"
+              ? "Your revealed demo NFT"
+              : "AlienMint Genesis featured artwork"
+          }
+          fill
+          priority
+          sizes="520px"
+          className="object-cover"
+        />
+        <span className="absolute left-4 top-4 rounded-full border border-white/15 bg-black/35 px-3 py-2 text-[10px] uppercase tracking-widest backdrop-blur-xl">
+          Interactive Demo
+        </span>
+        {stage === "success" && (
+          <div className="absolute inset-x-4 bottom-4 rounded-2xl border border-emerald-300/20 bg-black/45 p-4 backdrop-blur-xl">
+            <p className="text-emerald-300">Demo mint complete</p>
+            <p className="mt-1 text-sm text-white/55">
+              AlienMint Genesis #3428 has been revealed.
+            </p>
+          </div>
+        )}
+      </div>
+      <div className="p-4 sm:p-6">
+        <div className="flex justify-between">
+          <div>
+            <p className="text-xs uppercase tracking-widest text-white/35">
+              Public demo mint
+            </p>
+            <p className="mt-2 text-2xl">
+              {mockCollection.mintPrice} ETH{" "}
+              <span className="text-sm text-white/35">each</span>
+            </p>
+          </div>
+          <p className="text-right text-sm text-white/45">
+            {mockCollection.supply.toLocaleString()} /{" "}
+            {mockCollection.maxSupply.toLocaleString()}
+            <br />
+            <span className="text-xs">preview supply</span>
+          </p>
+        </div>
+        {stage === "confirm" ? (
+          <div className="clear-inset mt-6 rounded-2xl p-5">
+            <p className="font-medium">Confirm simulated mint</p>
+            <div className="mt-4 flex justify-between text-sm text-white/50">
+              <span>
+                {quantity} NFT{quantity > 1 ? "s" : ""}
+              </span>
+              <span>
+                {(quantity * mockCollection.mintPrice).toFixed(2)} ETH (demo)
+              </span>
+            </div>
+            <div className="mt-5 grid grid-cols-2 gap-3">
+              <button
+                onClick={() => setStage("idle")}
+                className="interactive-control rounded-xl py-3"
+              >
+                Back
+              </button>
+              <button
+                onClick={() => setStage((s) => nextMintStage(s, "confirm"))}
+                className="rounded-xl bg-emerald-400 py-3 font-semibold text-black"
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        ) : stage === "processing" ? (
+          <div
+            className="mt-6 rounded-2xl border border-cyan-400/15 bg-cyan-400/[.04] p-6 text-center"
+            role="status"
+          >
+            <span className="mx-auto block h-7 w-7 animate-spin rounded-full border-2 border-cyan-300/20 border-t-cyan-300" />
+            <p className="mt-3">Simulating mint…</p>
+            <p className="mt-1 text-xs text-white/40">
+              No blockchain transaction is being sent.
+            </p>
+          </div>
+        ) : stage === "success" ? (
+          <button
+            onClick={() => setStage("idle")}
+            className="interactive-control mt-6 w-full rounded-xl py-4"
+          >
+            Mint another demo NFT
+          </button>
+        ) : (
+          <>
+            <div className="mt-6 flex items-center justify-between">
+              <span className="text-sm text-white/45">Quantity</span>
+              <div className="flex items-center gap-4">
+                <button
+                  aria-label="Decrease quantity"
+                  onClick={() => set(quantity - 1)}
+                  className="interactive-control h-10 w-10 rounded-xl"
+                >
+                  −
+                </button>
+                <output aria-live="polite" className="w-5 text-center">
+                  {quantity}
+                </output>
+                <button
+                  aria-label="Increase quantity"
+                  onClick={() => set(quantity + 1)}
+                  className="interactive-control h-10 w-10 rounded-xl"
+                >
+                  +
+                </button>
+              </div>
+            </div>
+            <button
+              onClick={() => setStage((s) => nextMintStage(s, "begin"))}
+              className="mt-6 w-full rounded-xl bg-gradient-to-r from-emerald-400 to-cyan-400 py-4 font-semibold text-black transition hover:brightness-110 active:scale-[.98]"
+            >
+              Preview mint · {(quantity * mockCollection.mintPrice).toFixed(2)}{" "}
+              ETH
+            </button>
+            <p className="mt-3 text-center text-xs text-white/30">
+              Simulation only — no wallet, funds, or network required.
+            </p>
+          </>
+        )}
+      </div>
+    </section>
+  );
+}
