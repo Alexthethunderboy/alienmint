@@ -1,6 +1,6 @@
 # AlienMint
 
-Premium, demo-first NFT product experience. `/` is a wallet-free simulated mint, `/studio` is a local creator workflow, and `/live` preserves the real Base Sepolia application.
+A demo-first NFT experience. `/` is a wallet-free simulated mint, `/studio` is a local creator workflow, and `/live` preserves the real Base Sepolia application.
 
 ## Local setup
 
