@@ -2,6 +2,10 @@
 
 Premium, demo-first NFT product experience. `/` is a wallet-free simulated mint, `/studio` is a local creator workflow, and `/live` preserves the real Base Sepolia application.
 
+## Local setup
+
+Run from `frontend/` using Node `>=20.9 <23`: `npm ci`, then `npm run dev`. The demo needs no environment file.
+
 ## Configuration
 
 The default demo builds and runs without configuration. To enable `/live`, copy `.env.example` to `.env.local` and replace all three placeholders:
@@ -19,6 +23,7 @@ These values are bundled into browser code and must not be treated as secrets. A
 ## Validation
 
 ```shell
+npm test
 npm run abi:check
 npm run lint
 npm run typecheck

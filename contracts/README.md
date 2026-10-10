@@ -1,66 +1,20 @@
-## Foundry
+# AlienMint contracts
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The actual contract is `src/NFTCollection.sol`; its deployment script is `script/Deploy.s.sol:Deploy`, not the Foundry Counter example.
 
-Foundry consists of:
+## Local verification
 
-- **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
-- **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
-- **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
-- **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+With Foundry installed, run from `contracts/`:
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
-
-### Build
-
-```shell
-$ forge build
+```bash
+forge build
+forge test
 ```
 
-### Test
+These commands were not run for this documentation update. The frontend ABI tooling also builds this directory; see [frontend README](../frontend/README.md).
 
-```shell
-$ forge test
-```
+## Deployment boundary
 
-### Format
+`Deploy.run()` reads `PRIVATE_KEY`, `NFT_NAME`, `NFT_SYMBOL` and `NFT_BASE_URI`, derives the deployer address and broadcasts creation of `NFTCollection`. It rejects empty and built-in placeholder name/symbol/base-URI values. An authorized chain RPC endpoint and funded deployment account are separate prerequisites.
 
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+No broadcast command is included in the demo setup: deployment requires a separate reviewed action. Never commit a private key, invent credentials or assume a configured `/live` route proves contract deployment or an audit. No contract was deployed during this documentation work.
